@@ -1,0 +1,107 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Student {
+  id               String   @id @default(uuid())
+  student_name     String
+  student_email    String
+  student_password String
+  student_birth    DateTime
+  created_at       DateTime @default(now())
+
+  //RELATIONS ENDPOINT
+  bookcase Bookcase[]
+  purchase Purchase[]
+
+  @@map("CURSED_STUDENTS")
+}
+
+model Course {
+  id                 Int      @id @default(autoincrement())
+  course_name        String
+  course_price       Decimal  @db.Decimal(10, 2)
+  course_description String
+  course_offer       Int?
+  course_time        Int?
+  teacher_id         String
+  created_at         DateTime @default(now())
+
+  //RELATIONS
+  teacher Teacher @relation(fields: [teacher_id], references: [id])
+
+  //RELATIONS ENDPOINT
+  bookcase Bookcase[]
+  purchase Purchase[]
+  class    Class[]
+
+  @@map("CURSED_COURSES")
+}
+
+model Class {
+  id                Int      @id @default(autoincrement())
+  class_name        String
+  class_description String
+  class_time        Int?
+  class_video       String
+  course_id         Int
+  created_at        DateTime @default(now())
+
+  //RELATIONS
+  course Course @relation(fields: [course_id], references: [id])
+
+  @@map("CURSED_CLASSES")
+}
+
+model Teacher {
+  id               String @id @default(uuid())
+  teacher_name     String
+  teacher_email    String
+  teacher_password String
+
+  //RELATIONS ENDPOINT
+  course Course[]
+
+  @@map("CURSED_TEACHERS")
+}
+
+model Bookcase {
+  id          Int      @id @default(autoincrement())
+  course_id   Int
+  student_id  String
+  purchase_id String
+  created_at  DateTime @default(now())
+
+  //RELATIONS
+  course   Course   @relation(fields: [course_id], references: [id])
+  student  Student  @relation(fields: [student_id], references: [id])
+  purchase Purchase @relation(fields: [purchase_id], references: [id])
+
+  @@map("CURSED_BOOKCASES")
+}
+
+model Purchase {
+  id              String  @id @default(uuid())
+  purchase_method String
+  purchase_price  Decimal @db.Decimal(10, 2)
+  purchade_status Int     @default(0)
+  course_id       Int
+  student_id      String
+
+  //RELATIONS
+  course  Course  @relation(fields: [course_id], references: [id])
+  student Student @relation(fields: [student_id], references: [id])
+
+  //RELATIONS ENDPOINT
+  Bookcase Bookcase[]
+
+  @@map("CURSED_PURCHASES")
+}
