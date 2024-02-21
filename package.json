@@ -1,7 +1,7 @@
 {
   "scripts": {
     "dev": "ts-node-dev --exit-child --transpile-only --ignore-watch node_modules src/server.ts",
-    "build": "tsc",
+    "build": "tsc --outDir public",
     "start": "ts-node src/index.ts"
   },
   "devDependencies": {
