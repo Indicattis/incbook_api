@@ -2,106 +2,123 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client-js"
+    provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "mysql"
-  url      = env("DATABASE_URL")
+    provider = "mysql"
+    url      = env("DATABASE_URL")
 }
 
 model Student {
-  id               String   @id @default(uuid())
-  student_name     String
-  student_email    String
-  student_password String
-  student_birth    DateTime
-  created_at       DateTime @default(now())
+    id               String   @id @default(uuid())
+    student_name     String
+    student_email    String   @unique
+    student_password String
+    student_phone    String   @unique
+    student_genre    String
+    student_country  String?
+    student_birthday DateTime
+    student_status   Int      @default(1)
 
-  //RELATIONS ENDPOINT
-  bookcase Bookcase[]
-  purchase Purchase[]
+    created_at DateTime @default(now())
 
-  @@map("CURSED_STUDENTS")
+    //RELATIONS ENDPOINT
+    bookcase Bookcase[]
+    purchase Purchase[]
+
+    @@map("INC_STUDENTS")
 }
 
 model Course {
-  id                 Int      @id @default(autoincrement())
-  course_name        String
-  course_price       Decimal  @db.Decimal(10, 2)
-  course_description String
-  course_offer       Int?
-  course_time        Int?
-  teacher_id         String
-  created_at         DateTime @default(now())
+    id                 Int      @id @unique @default(autoincrement())
+    course_name        String
+    course_price       Decimal  @db.Decimal(10, 2)
+    course_description String
+    course_offer       Int?
+    course_time        Int?
+    teacher_id         String
+    created_at         DateTime @default(now())
 
-  //RELATIONS
-  teacher Teacher @relation(fields: [teacher_id], references: [id])
+    //RELATIONS
+    teacher Teacher @relation(fields: [teacher_id], references: [id])
 
-  //RELATIONS ENDPOINT
-  bookcase Bookcase[]
-  purchase Purchase[]
-  class    Class[]
+    //RELATIONS ENDPOINT
+    bookcase Bookcase[]
+    purchase Purchase[]
+    class    Class[]
 
-  @@map("CURSED_COURSES")
+    @@map("INC_COURSES")
 }
 
 model Class {
-  id                Int      @id @default(autoincrement())
-  class_name        String
-  class_description String
-  class_time        Int?
-  class_video       String
-  course_id         Int
-  created_at        DateTime @default(now())
+    id                Int      @id @unique @default(autoincrement())
+    class_name        String
+    class_description String
+    class_time        Int?
+    class_video       String
+    course_id         Int
+    created_at        DateTime @default(now())
 
-  //RELATIONS
-  course Course @relation(fields: [course_id], references: [id])
+    //RELATIONS
+    course Course @relation(fields: [course_id], references: [id])
 
-  @@map("CURSED_CLASSES")
+    @@map("INC_CLASSES")
 }
 
 model Teacher {
-  id               String @id @default(uuid())
-  teacher_name     String
-  teacher_email    String
-  teacher_password String
+    id                  String   @id @default(uuid())
+    teacher_name        String
+    teacher_email       String   @unique
+    teacher_password    String
+    teacher_phone       String   @unique
+    teacher_register    String   @unique
+    teacher_education   String
+    teacher_experience  String
+    teacher_description String
+    teacher_gender      String
+    teacher_image       String
+    teacher_status      Int      @default(1)
+    teacher_birthday    DateTime
 
-  //RELATIONS ENDPOINT
-  course Course[]
+    created_at DateTime @default(now())
+    //RELATIONS ENDPOINT
+    course     Course[]
 
-  @@map("CURSED_TEACHERS")
+    @@map("INC_TEACHERS")
 }
 
 model Bookcase {
-  id          Int      @id @default(autoincrement())
-  course_id   Int
-  student_id  String
-  purchase_id String
-  created_at  DateTime @default(now())
+    id          Int      @id @default(autoincrement())
+    course_id   Int
+    student_id  String
+    purchase_id String
+    created_at  DateTime @default(now())
 
-  //RELATIONS
-  course   Course   @relation(fields: [course_id], references: [id])
-  student  Student  @relation(fields: [student_id], references: [id])
-  purchase Purchase @relation(fields: [purchase_id], references: [id])
+    //RELATIONS
+    course   Course   @relation(fields: [course_id], references: [id])
+    student  Student  @relation(fields: [student_id], references: [id])
+    purchase Purchase @relation(fields: [purchase_id], references: [id])
 
-  @@map("CURSED_BOOKCASES")
+    @@map("INC_BOOKCASES")
 }
 
 model Purchase {
-  id              String  @id @default(uuid())
-  purchase_method String
-  purchase_price  Decimal @db.Decimal(10, 2)
-  purchade_status Int     @default(0)
-  course_id       Int
-  student_id      String
+    id                  String   @id @default(uuid())
+    student_id          String
+    course_id           Int
+    purchase_method     String
+    purchase_price      Decimal  @db.Decimal(10, 2)
+    purchade_status     Int      @default(0)
+    purchase_date_at    DateTime @default(now())
+    purchase_updated_at DateTime @updatedAt
 
-  //RELATIONS
-  course  Course  @relation(fields: [course_id], references: [id])
-  student Student @relation(fields: [student_id], references: [id])
+    //RELATIONS
+    course  Course  @relation(fields: [course_id], references: [id])
+    student Student @relation(fields: [student_id], references: [id])
 
-  //RELATIONS ENDPOINT
-  Bookcase Bookcase[]
+    //RELATIONS ENDPOINT
+    Bookcase Bookcase[]
 
-  @@map("CURSED_PURCHASES")
+    @@map("INC_PURCHASES")
 }
