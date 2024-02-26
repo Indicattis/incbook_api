@@ -30,30 +30,27 @@ export class create_students {
 }
 
 export class access_student {
-  async login(data: StudentDTO) {
-    const student = await prisma.student.findFirst({
-      where: {
-        student_email: data.student_email,
-        student_password: data.student_password,
-      },
-    });
+    async login(data: StudentDTO) {
+        const student = await prisma.student.findFirst({
+            where: {
+                student_email: data.student_email,
+            },
+        });
 
-    if (student) {
+        if (student && data.student_password === student.student_password) {
+            const token = jwt.sign(
+                {
+                    student_id: student.id,
+                    student_name: student.student_name,
+                    student_email: student.student_email,
+                },
+                'studentToken',
+                { expiresIn: '1h' }
+            );
 
-      const token = jwt.sign(
-        {
-          student_id: student.id,
-          student_name: student.student_name,
-          student_email: student.student_email,
-          student_birth: student.student_birthday
-        },
-        'user_token',
-        { expiresIn: '1h' }
-      );
-
-      return { token, authenticated: true };
-    } else {
-      return { authenticated: false }
+            return { authenticated: true, token };
+        } else {
+            return { authenticated: false };
+        }
     }
-  }
 }

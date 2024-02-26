@@ -1,4 +1,4 @@
-import { Course } from "@prisma/client";
+import { Bookcase, Course } from "@prisma/client";
 import { CourseDTO } from "../models/dto-course";
 import { prisma } from "../../prisma";
 
