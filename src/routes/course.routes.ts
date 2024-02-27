@@ -7,6 +7,7 @@ const CTR_Count_Course = new ctr_count_course();
 
 const Routes_Course = Router();
 
+Routes_Course.post("/course-create", CTR_Create_Course.create);
 Routes_Course.post("/course-create-array", CTR_Create_Course.create_array);
 Routes_Course.get("/course-select-array", CTR_Select_Course.fetch);
 Routes_Course.get("/course-select/:teacher", CTR_Select_Course.select);

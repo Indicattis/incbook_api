@@ -7,18 +7,32 @@ import { prisma } from "../../prisma";
 
 export class create_purchase {
     async create(data: PurchaseDTO): Promise<Purchase> {
-      const item = await prisma.purchase.create({
-        data: {
-            student_id: data.student_id,
-            course_id: data.course_id,
-            purchase_method: data.purchase_method,
-            purchase_price: data.purchase_price
-        }
-      })
-      return item;
+        const courses = await prisma.course.findMany({
+            where: {
+                id: {
+                    in: data.course_id
+                }
+            }
+        });
+
+        const totalPrice = courses.reduce((total, course) => total + course.course_price.toNumber(), 0);
+
+        const purchase = await prisma.purchase.create({
+            data: {
+                student_id: data.student_id,
+                purchase_method: data.purchase_method,
+                purchase_price: totalPrice
+            },
+            include: {
+                student: true
+            }
+        });
+    
+        return purchase;
     }
-  }
-  
+    
+}
+
 export class update_purchase {
     async aproved_status(data: PurchaseDTO) {
         try {

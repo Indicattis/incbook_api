@@ -45,7 +45,6 @@ model Course {
 
     //RELATIONS ENDPOINT
     bookcase Bookcase[]
-    purchase Purchase[]
     class    Class[]
 
     @@map("INC_COURSES")
@@ -106,7 +105,6 @@ model Bookcase {
 model Purchase {
     id                  String   @id @default(uuid())
     student_id          String
-    course_id           Int
     purchase_method     String
     purchase_price      Decimal  @db.Decimal(10, 2)
     purchade_status     Int      @default(0)
@@ -114,7 +112,6 @@ model Purchase {
     purchase_updated_at DateTime @updatedAt
 
     //RELATIONS
-    course  Course  @relation(fields: [course_id], references: [id])
     student Student @relation(fields: [student_id], references: [id])
 
     //RELATIONS ENDPOINT

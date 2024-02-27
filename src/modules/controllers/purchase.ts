@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { PurchaseDTO } from "../models/dto-purchase";
 import { create_purchase, update_purchase } from "../services/purchase";
+import { create_bookcase } from "../services/bookcase";
 
 
 export class ctr_create_purchase {
@@ -8,12 +9,25 @@ export class ctr_create_purchase {
         const data: PurchaseDTO = req.body;
 
         const newPurchase = new create_purchase();
+        const newBookcase = new create_bookcase();
 
-        const result = await newPurchase.create(data);
+        try {
+            const result = await newPurchase.create(data);
 
-        return res.status(201).json(result);
+            const bookcasesResult = await newBookcase.create_new(data.student_id, result.id, data.course_id);
+
+            if (Array.isArray(bookcasesResult)) {
+                return res.status(201).json({ purchase: result, bookcases: bookcasesResult });
+            } else {
+                return res.status(500).json({ message: 'Erro ao criar bookcases.' });
+            }
+        } catch (error) {
+            console.error('Erro ao criar compra:', error);
+            return res.status(500).json({ message: 'Erro ao criar compra.' });
+        }
     }
 }
+
 
 export class ctr_update_purchase {
     async aproved_status(req: Request, res: Response) {
